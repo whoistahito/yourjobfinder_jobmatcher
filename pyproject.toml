@@ -19,6 +19,7 @@ dependencies = [
     "sentence-transformers>=5.1.1",
     "numpy",
     "pandas",
+    "openai"
 ]
 
 [tool.pytest.ini_options]
