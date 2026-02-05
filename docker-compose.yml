@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     environment:
       - API_ACCESS_TOKEN=${API_ACCESS_TOKEN:-changeme}
+      - EXTERNAL_LLM_API_KEY=${EXTERNAL_LLM_API_KEY}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
       interval: 30s
