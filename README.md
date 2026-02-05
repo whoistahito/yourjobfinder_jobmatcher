@@ -1,25 +1,24 @@
-# Novel Job Matching
+# Novel Job Matching System (Dockerized)
 
-This is the coding part of Bachelor thesis by Seyed Taha Amirhosseini
+This project builds upon the Bachelor thesis of **Taha Amirhosseini**: [Novel-Job-Matching](https://github.com/whoistahito/Novel-Job-Matching).
+It provides a production-ready, dockerized version of the original job matching system.
 
-## Directories
+## About
 
-- `conception/` : contains the files from exploration and conception phase.
-- `implementation/` : contains evaluation framework and job matching system. The dataset and results of the evaluation of LLMs can be found there.
-- `evaluation/` : contains code from evaluation phase. code for all the figures used in the thesis can be found in this directory. It also contains the LinkedIn comparison code and results.
+This is a job matching system that uses **LLMs (Large Language Models)** to extract structured requirements from job descriptions and **Embeddings** to match them against user profiles efficiently.
 
-## Setup
+## Deployment
 
-This project uses `uv`.
+The project is packaged using `uv` and includes a secure, optimized Docker setup ready for deployment on platforms like Coolify.
 
-```powershell
-uv sync
+### Run with Docker Compose
+
+```bash
+docker-compose up --build
 ```
 
-## Run (Job Matching System API)
+### Environment Variables
 
-From `implementation/job_matching_system/`:
-
-```powershell
-uv run uvicorn app:app
-```
+Ensure you set the following environment variables:
+- `API_ACCESS_TOKEN`: Token to secure your API.
+- `EXTERNAL_LLM_API_KEY`: API Key for the external LLM provider.
