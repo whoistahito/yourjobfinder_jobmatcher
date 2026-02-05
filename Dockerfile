@@ -16,8 +16,5 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-RUN useradd -m appuser && chown -R appuser /app
-USER appuser
-
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
