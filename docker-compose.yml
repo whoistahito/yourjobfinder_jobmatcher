@@ -12,7 +12,7 @@ services:
       - API_ACCESS_TOKEN=${API_ACCESS_TOKEN:-changeme}
       - EXTERNAL_LLM_API_KEY=${EXTERNAL_LLM_API_KEY}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
       interval: 30s
       timeout: 10s
       retries: 3
