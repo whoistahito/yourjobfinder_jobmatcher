@@ -9,3 +9,6 @@ __pycache__/
 huggingface-token
 /tunnel.ps1
 /requirements_extraction/evaluation/.deepeval/
+
+# Env files
+.env

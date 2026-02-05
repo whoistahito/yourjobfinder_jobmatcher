@@ -1,4 +1,7 @@
 from fastapi import FastAPI, HTTPException, Response, status
+import os
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from api_schema import JobExtractionInput, JobMatchingResponse
 from external_model import get_extractor_for
@@ -6,8 +9,31 @@ from similarity_search import compute_similarity
 
 app = FastAPI()
 
+_security = HTTPBearer(auto_error=False)
 
-@app.post("/extract", response_model=JobMatchingResponse)
+
+def _require_token(credentials: HTTPAuthorizationCredentials | None = Depends(_security)):
+    """Require an Authorization: Bearer <token> header matching API_ACCESS_TOKEN.
+
+    If API_ACCESS_TOKEN is unset/empty, auth is disabled (useful for local/dev).
+    """
+    expected = os.getenv("API_ACCESS_TOKEN", "")
+    if not expected:
+        return
+
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
+
+    if credentials.credentials != expected:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token")
+
+
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
+
+
+@app.post("/extract", response_model=JobMatchingResponse, dependencies=[Depends(_require_token)])
 async def extract_requirements(input: JobExtractionInput,
                                response: Response,
                                ):

@@ -2,6 +2,9 @@ from fastapi.testclient import TestClient
 
 
 def test_extract_endpoint_happy_path(monkeypatch):
+    import os
+    os.environ["API_ACCESS_TOKEN"] = "testtoken"
+
     import app as app_module
     from api_schema import Requirements, SimilarityScore
 
@@ -19,7 +22,7 @@ def test_extract_endpoint_happy_path(monkeypatch):
         "inputText": "text",
         "userProfile": {"skills": ["python"], "experiences": [], "qualifications": []},
     }
-    res = client.post("/extract", json=payload)
+    res = client.post("/extract", json=payload, headers={"Authorization": "Bearer testtoken"})
 
     assert res.status_code == 200
     body = res.json()
@@ -27,7 +30,30 @@ def test_extract_endpoint_happy_path(monkeypatch):
     assert body["similarityScore"]["score"] == 0.5
 
 
+def test_extract_endpoint_requires_token_when_configured(monkeypatch):
+    import os
+    os.environ["API_ACCESS_TOKEN"] = "testtoken"
+
+    import app as app_module
+
+    client = TestClient(app_module.app)
+    payload = {
+        "modelId": "qwen3-8b",
+        "inputText": "text",
+        "userProfile": {"skills": [], "experiences": [], "qualifications": []},
+    }
+
+    res = client.post("/extract", json=payload)
+    assert res.status_code == 401
+
+    res = client.post("/extract", json=payload, headers={"Authorization": "Bearer wrong"})
+    assert res.status_code == 403
+
+
 def test_extract_endpoint_returns_500_on_exception(monkeypatch):
+    import os
+    os.environ["API_ACCESS_TOKEN"] = "testtoken"
+
     import app as app_module
 
     def boom(_):
@@ -41,6 +67,6 @@ def test_extract_endpoint_returns_500_on_exception(monkeypatch):
         "inputText": "text",
         "userProfile": {"skills": [], "experiences": [], "qualifications": []},
     }
-    res = client.post("/extract", json=payload)
+    res = client.post("/extract", json=payload, headers={"Authorization": "Bearer testtoken"})
     assert res.status_code == 500
     assert "bad" in res.json()["detail"]
