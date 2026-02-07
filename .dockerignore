@@ -1,14 +1,44 @@
-.git
-.gitignore
-.dockerignore
-__pycache__
-.venv
-.pytest_cache
-*.pyc
-*.pyo
-*.pyd
+# VCS
+.git/
+
+# Python caches/build
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+
+# Virtualenvs
+.venv/
+
+# Packaging
+build/
+dist/
+**/*.egg-info/
+
+# Editors/OS
+.idea/
+.vscode/
 .DS_Store
+
+# Local outputs/artifacts
+result_*/
+*.log
+*.sqlite
+*.db
+
+# Dev-only helpers
+scripts/
+
+# Tests/docs (don’t ship to runtime)
 tests/
 README.md
+AGENTS.md
 
-
+# GitHub / CI
+.github/

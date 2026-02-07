@@ -2,13 +2,28 @@ from fastapi import FastAPI, HTTPException, Response, status
 import os
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from contextlib import asynccontextmanager
 
 from api_schema import JobExtractionInput, JobMatchingResponse
 from external_model import get_extractor_for
 from similarity_search import compute_similarity
 from utils import merge_requirements
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # Best-effort warmup: avoids the first request paying the model download/load cost.
+    # If anything goes wrong (e.g., offline build), we keep serving and fall back to lazy load.
+    try:
+        from similarity_search import get_model
+
+        get_model()
+    except Exception:
+        pass
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 _security = HTTPBearer(auto_error=False)
 
