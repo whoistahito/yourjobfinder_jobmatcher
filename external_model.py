@@ -1,5 +1,6 @@
 from collections import defaultdict
 import os
+from pathlib import Path
 
 from openai import OpenAI
 import outlines
@@ -62,9 +63,9 @@ class ExternalLLMExtractor:
 
     def process_chunk(self, chunk) -> Requirements:
         """Process a single chunk using the template and external API."""
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        template_path = os.path.join(current_dir, "prompt_template.txt")
-        template = Template.from_file(template_path)
+        current_dir = Path(__file__).resolve().parent
+        template_path = current_dir / "prompt_template.txt"
+        template = Template.from_file(str(template_path))
         prompt = template(chunk=chunk)
 
         try:
@@ -82,6 +83,30 @@ class ExternalLLMExtractor:
         except Exception as e:
             print(f"Error during generation: {e}")
             return Requirements()
+
+    def judge_requirements(self, input_text: str, requirements: Requirements) -> Requirements:
+        current_dir = Path(__file__).resolve().parent
+        template_path = current_dir / "prompt_judge_template.txt"
+        template = Template.from_file(str(template_path))
+        prompt = template(
+            input_text=input_text,
+            requirements_json=requirements.model_dump_json(),
+        )
+
+        try:
+            response = self.generator(
+                prompt,
+                Requirements,
+                temperature=0.0,
+            )
+            response = response.replace("\n", "")
+            response = response.replace("<|return|>", "")
+            response = response.replace("```json", "")
+            response = response.replace("```", "")
+            return Requirements.model_validate_json(response)
+        except Exception as e:
+            print(f"Error during judge generation: {e}")
+            return requirements
 
 
 def get_extractor_for(model_key):

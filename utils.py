@@ -1,6 +1,17 @@
 import re
 
 
+def merge_requirements(a, b):
+    """Union two Requirements objects (dedupe + sorted for determinism)."""
+    from api_schema import Requirements
+
+    return Requirements(
+        skills=sorted(set((a.skills or [])) | set((b.skills or []))),
+        experiences=sorted(set((a.experiences or [])) | set((b.experiences or []))),
+        qualifications=sorted(set((a.qualifications or [])) | set((b.qualifications or []))),
+    )
+
+
 def chunk_markdown(markdown_text, chunk_size):
     chars_per_chunk = chunk_size * 4
     chunks = re.split(r'(#{1,6}\s+.*?\n)', markdown_text)
