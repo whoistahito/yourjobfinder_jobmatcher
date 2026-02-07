@@ -19,6 +19,10 @@ EXTERNAL_MODELS_CONFIG = {
         "model_name": "qwen/qwen3-next-80b-a3b-thinking",
         "chunk_size": 12000,
     },
+    "glm4.7": {
+        "model_name": "z-ai/glm4.7",
+        "chunk_size": 12000,
+    },
 }
 
 _MODEL_INSTANCES = {}
