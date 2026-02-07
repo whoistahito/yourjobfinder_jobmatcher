@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -29,6 +29,11 @@ class UserProfile(SkillExperienceBase):
     pass
 
 
+class ExtractionPipeline(BaseModel):
+    extractorModelIds: List[str] = Field(..., min_length=2, description="Two model ids used for extraction")
+    judgeModelId: str = Field(..., description="Model id used to judge/validate merged requirements")
+
+
 class JobExtractionInput(BaseModel):
     inputText: str = Field(...,
                            description="Text to extract job requirements from"
@@ -36,6 +41,10 @@ class JobExtractionInput(BaseModel):
     modelId: str = Field(...,
                          description="LLM model id to use"
                          )
+    extractionPipeline: Optional[ExtractionPipeline] = Field(
+        default=None,
+        description="Optional pipeline override: run two extractors, merge, then judge",
+    )
     userProfile: UserProfile = Field(...,
                                      description="User profile data"
                                      )
