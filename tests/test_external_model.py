@@ -75,3 +75,31 @@ def test_process_chunk_cleans_response(monkeypatch):
     assert "\n" not in captured["s"]
     assert "```" not in captured["s"]
     assert "<|return|>" not in captured["s"]
+
+
+def test_judge_requirements_cleans_response(monkeypatch):
+    import external_model
+    from api_schema import Requirements
+
+    monkeypatch.setenv("EXTERNAL_LLM_API_KEY", "x")
+    monkeypatch.setattr(external_model.ExternalLLMExtractor, "_load_model", lambda self: None)
+
+    ex = external_model.ExternalLLMExtractor(model_name="m", chunk_size=10)
+
+    class DummyReq:
+        pass
+
+    captured = {}
+
+    def fake_validate_json(s):
+        captured["s"] = s
+        return DummyReq()
+
+    monkeypatch.setattr(Requirements, "model_validate_json", staticmethod(fake_validate_json))
+    ex.generator = lambda *args, **kwargs: "```json\n{\"skills\":[]}\n```<|return|>\n"
+
+    out = ex.judge_requirements("input", Requirements())
+    assert isinstance(out, DummyReq)
+    assert "\n" not in captured["s"]
+    assert "```" not in captured["s"]
+    assert "<|return|>" not in captured["s"]
