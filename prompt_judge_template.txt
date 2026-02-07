@@ -1,0 +1,16 @@
+You are reviewing extracted job requirements.
+
+Job description:
+{{input_text}}
+
+Extracted requirements (JSON):
+{{requirements_json}}
+
+Task:
+- Check the extracted requirements against the job description.
+- Fix incorrect items.
+- Add missing mandatory requirements that are clearly stated.
+- Remove duplicates.
+
+Return ONLY valid JSON that matches the Requirements schema with keys: skills, experiences, qualifications.
+
