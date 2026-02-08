@@ -68,8 +68,7 @@ try:
         API_URL,
         headers=headers,
         data=json.dumps(payload),
-        verify=False,
-        timeout=950,
+        timeout=240,
     )
     processing_time_in_seconds = time.time() - start_time
 

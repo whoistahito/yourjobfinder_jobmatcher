@@ -5,7 +5,7 @@ import time
 import requests
 
 # Updated configuration for external model testing
-API_URL = ("YOUR_URL")
+API_URL = "YOUR_URL"
 MODEL_ID = "gpt-oss-120b"
 INPUT_FILE = "dummy_input.md"
 OUTPUT_DIR = f"result_{MODEL_ID}"
@@ -64,7 +64,7 @@ payload = {
 
 start_time = time.time()
 try:
-    response = requests.post(API_URL, headers=headers, data=json.dumps(payload), verify=False)
+    response = requests.post(API_URL, headers=headers, data=json.dumps(payload), timeout=240)
     end_time = time.time()
     processing_time_in_seconds = end_time - start_time
 
