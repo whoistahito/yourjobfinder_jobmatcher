@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException, Response, status
+from contextlib import asynccontextmanager
 import os
+
 from fastapi import Depends
+from fastapi import FastAPI, HTTPException, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from api_schema import JobExtractionInput, JobMatchingResponse
@@ -8,7 +10,19 @@ from external_model import get_extractor_for
 from similarity_search import compute_similarity
 from utils import merge_requirements
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    try:
+        from similarity_search import get_model
+
+        get_model()
+    except Exception:
+        pass
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 _security = HTTPBearer(auto_error=False)
 
